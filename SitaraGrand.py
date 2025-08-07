@@ -1,6 +1,5 @@
-import os
-import mysql.connector
-from mysql.connector import Error
+import psycopg2
+from psycopg2 import OperationalError
 from flask import Flask, render_template, redirect, url_for, request, abort, flash
 from werkzeug.utils import secure_filename
 
@@ -30,7 +29,6 @@ def sitaraadmin():
             file.save(os.path.join(save_path, filename))
         elif file and file.filename != '':
             flash("Invalid image file type.", "error")
-            # Continue to render form below, no redirect
 
         if not category or not item_name or not price:
             flash("Category, Item Name, and Price are required.", "error")
@@ -43,21 +41,25 @@ def sitaraadmin():
             return render_template("sitaraadmin.html", categories=menucard)
 
         try:
-            # Check if the item already exists
+            # Check if item exists
             check_query = "SELECT COUNT(*) FROM menu WHERE category = %s AND items = %s"
             mycursor.execute(check_query, (category, item_name))
             (count,) = mycursor.fetchone()
 
             if count > 0:
                 flash(f"Item '{item_name}' already exists in category '{category}'.", "warning")
-                # Do NOT insert again, but render page with message
                 return render_template("sitaraadmin.html", categories=menucard)
 
-            # Insert new item if not exists
             insert_query = "INSERT INTO menu (category, items, price, itemimage) VALUES (%s, %s, %s, %s)"
             mycursor.execute(insert_query, (category, item_name, price_int, filename))
             mydb.commit()
             flash(f"Menu item '{item_name}' added successfully!", "success")
+
+        except Exception as e:
+            flash(f"Database error: {e}", "error")
+
+    return render_template("sitaraadmin.html", categories=menucard)
+
 
         except Exception as e:
             flash(f"Database error: {e}", "error")
@@ -67,15 +69,18 @@ def sitaraadmin():
 
 
 try:
-    mydb = mysql.connector.connect(host='localhost', user='root', passwd='sri@vatsav840', database='sri')
-    if mydb.is_connected():
-        mycursor = mydb.cursor()
-    else:
-        mycursor = None
-except Error as e:
+   mydb = psycopg2.connect(
+    host=os.getenv("DB_HOST"),
+    port=os.getenv("DB_PORT"),
+    database=os.getenv("DB_NAME"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD")
+    )
+    mycursor = mydb.cursor()
+except OperationalError as e:
     mydb = None
     mycursor = None
-    print(f"Error connecting to database: {e}")
+    print(f"Error connecting to PostgreSQL database: {e}")
 
 menucard = [
     "Biryani Item",

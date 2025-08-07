@@ -61,12 +61,6 @@ def sitaraadmin():
     return render_template("sitaraadmin.html", categories=menucard)
 
 
-        except Exception as e:
-            flash(f"Database error: {e}", "error")
-
-    # On GET or after POST handling, render the admin form
-    return render_template("sitaraadmin.html", categories=menucard)
-
 
 try:
    mydb = psycopg2.connect(
@@ -139,3 +133,4 @@ def menu_items(category_name):
 
 if __name__ == "__main__":
     app.run(debug=True)
+

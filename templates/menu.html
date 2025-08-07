@@ -1,47 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Menu Categories - Sitara Grand</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
+            background: #fafafa;
+            color: #222;
         }
         h1 {
             margin-bottom: 30px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 2.4rem;
+            color: #333;
+            letter-spacing: 1px;
         }
         .menu-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 20px;
+            justify-content: center;
+            max-width: 900px;
+            margin: 0 auto;
         }
         .menu-button {
-            background-color: #4CAF50;
             border: none;
             color: white;
-            padding: 15px 25px;
+            padding: 18px 28px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
-            font-size: 16px;
-            border-radius: 6px;
+            font-size: 18px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
             min-width: 220px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            user-select: none;
+            font-weight: 600;
+            text-transform: uppercase;
         }
-        .menu-button:hover {
-            background-color: #45a049;
+        /* Veg categories green */
+        .veg {
+            background-color: #4caf50;
         }
+        .veg:hover, .veg:focus {
+            background-color: #388e3c;
+            transform: translateY(-3px);
+            outline: none;
+        }
+
+        /* Non-veg categories red */
+        .nonveg {
+            background-color: #e53935;
+        }
+        .nonveg:hover, .nonveg:focus {
+            background-color: #b71c1c;
+            transform: translateY(-3px);
+            outline: none;
+        }
+
         .back-link {
             display: block;
-            margin-top: 40px;
+            margin-top: 45px;
             font-size: 18px;
-            color: #333;
+            color: #555;
             text-decoration: none;
+            text-align: center;
+            font-weight: 500;
         }
-        .back-link:hover {
+        .back-link:hover, .back-link:focus {
             text-decoration: underline;
+            color: #111;
+        }
+
+        /* Responsive for smaller devices */
+        @media (max-width: 480px) {
+            .menu-button {
+                font-size: 16px;
+                min-width: 180px;
+                padding: 14px 22px;
+                border-radius: 7px;
+            }
         }
     </style>
 </head>
@@ -50,10 +94,17 @@
 
     <div class="menu-container">
         {% for category in categories %}
-            <a href="{{ url_for('menu_items', category_name=category) }}" class="menu-button">{{ category }}</a>
+            {% set lower = category.lower() %}
+            {% if 'non veg' in lower or 'mutton' in lower or 'chicken' in lower or 'fish' in lower or 'egg' in lower or 'prawn' in lower or 'prawns' in lower %}
+                <!-- Non-Veg -->
+                <a href="{{ url_for('menu_items', category_name=category) }}" class="menu-button nonveg" tabindex="0">{{ category }}</a>
+            {% else %}
+                <!-- Veg -->
+                <a href="{{ url_for('menu_items', category_name=category) }}" class="menu-button veg" tabindex="0">{{ category }}</a>
+            {% endif %}
         {% endfor %}
     </div>
 
-    <a href="{{ url_for('home') }}" class="back-link">← Back to Home</a>
+    <a href="{{ url_for('home') }}" class="back-link" tabindex="0">← Back to Home</a>
 </body>
 </html>

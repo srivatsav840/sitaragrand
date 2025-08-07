@@ -62,19 +62,21 @@ def sitaraadmin():
 
 
 
+
 try:
-   mydb = psycopg2.connect(
-    host=os.getenv("DB_HOST"),
-    port=os.getenv("DB_PORT"),
-    database=os.getenv("DB_NAME"),
-    user=os.getenv("DB_USER"),
-    password=os.getenv("DB_PASSWORD")
-    )
+    mydb = psycopg2.connect(
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        database=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD")
+        )
     mycursor = mydb.cursor()
 except OperationalError as e:
     mydb = None
     mycursor = None
     print(f"Error connecting to PostgreSQL database: {e}")
+
 
 menucard = [
     "Biryani Item",
@@ -133,4 +135,5 @@ def menu_items(category_name):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 

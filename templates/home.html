@@ -1,12 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sitara Grand Multi Cuisine Family Restaurant</title>
+    <style>
+        /* Set full screen with flexible box to center content */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+            background: url('{{ url_for("static", filename="images/sitara grand.png") }}') no-repeat center center fixed;
+            background-size: cover;
+            /* Use a semi-transparent overlay */
+        }
+
+        /* Overlay with a transparent dark layer for better text visibility */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5); /* semi-transparent black */
+            z-index: -1;
+        }
+
+        /* Container to vertically and horizontally center */
+        .container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.7);
+        }
+
+        form button {
+            background-color: rgba(255, 255, 255, 0.85);
+            color: #333;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 35px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.4);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            user-select: none;
+        }
+
+        form button:hover,
+        form button:focus {
+            background-color: #fff;
+            color: #000;
+            outline: none;
+        }
+
+        /* Responsive text for smaller screens */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 30px;
+            }
+
+            form button {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Sitara Grand Multi Cuisine Family Restaurant</h1>
-    <form action="{{ url_for('menu') }}">
-        <button type="submit">Menu</button>
-    </form>
+    <div class="container">
+        <h1>Sitara Grand Multi Cuisine Family Restaurant</h1>
+        <form action="{{ url_for('menu') }}">
+            <button type="submit" aria-label="View Menu">Menu</button>
+        </form>
+    </div>
 </body>
 </html>

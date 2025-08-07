@@ -4,6 +4,20 @@ from psycopg2 import OperationalError
 from flask import Flask, render_template, redirect, url_for, request, abort, flash
 from werkzeug.utils import secure_filename
 
+try:
+    mydb = psycopg2.connect(
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        database=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD")
+        )
+    mycursor = mydb.cursor()
+except OperationalError as e:
+    mydb = None
+    mycursor = None
+    print(f"Error connecting to PostgreSQL database: {e}")
+
 app = Flask(__name__)
 app.secret_key = 'srivatsav'
 UPLOAD_FOLDER = 'static/images'  # You can choose any subfolder inside static
@@ -40,6 +54,19 @@ def sitaraadmin():
         except ValueError:
             flash("Price must be a valid number.", "error")
             return render_template("sitaraadmin.html", categories=menucard)
+        try:
+            mydb = psycopg2.connect(
+                host=os.getenv("DB_HOST"),
+                port=os.getenv("DB_PORT"),
+                database=os.getenv("DB_NAME"),
+                user=os.getenv("DB_USER"),
+                password=os.getenv("DB_PASSWORD")
+                )
+            mycursor = mydb.cursor()
+        except OperationalError as e:
+            mydb = None
+            mycursor = None
+            print(f"Error connecting to PostgreSQL database: {e}")
 
         try:
             # Check if item exists
@@ -61,22 +88,6 @@ def sitaraadmin():
 
     return render_template("sitaraadmin.html", categories=menucard)
 
-
-
-
-try:
-    mydb = psycopg2.connect(
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT"),
-        database=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD")
-        )
-    mycursor = mydb.cursor()
-except OperationalError as e:
-    mydb = None
-    mycursor = None
-    print(f"Error connecting to PostgreSQL database: {e}")
 
 
 menucard = [
@@ -112,8 +123,20 @@ def menu():
 
 @app.route("/menu/<category_name>")
 def menu_items(category_name):
-    if mycursor is None:
-        return "Database connection error. Please try again later."
+    try:
+        mydb = psycopg2.connect(
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT"),
+            database=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD")
+            )
+        mycursor = mydb.cursor()
+    except OperationalError as e:
+        mydb = None
+        mycursor = None
+        print(f"Error connecting to PostgreSQL database: {e}")
+    
 
     try:
         # Validate category_name is in menucard list
@@ -126,6 +149,8 @@ def menu_items(category_name):
 
         # Fetch all rows; each row = (item_name, price, image_filename)
         items = mycursor.fetchall()
+        mycursor.close()
+        mydb.close()
 
     except Exception as e:
         return f"Error fetching menu items: {e}"
@@ -138,6 +163,7 @@ def menu_items(category_name):
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
